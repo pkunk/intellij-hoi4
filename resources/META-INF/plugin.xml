@@ -1,0 +1,43 @@
+<idea-plugin>
+  <id>pkunk.hoi4</id>
+  <name>HOI4 content editor</name>
+  <version>1.0</version>
+
+  <description><![CDATA[
+      Edit "Hearts of Iron 4" resource files.
+    ]]></description>
+
+  <change-notes><![CDATA[
+      Initial release
+    ]]>
+  </change-notes>
+
+  <vendor url="https://github.com/pkunk/intellij-hoi4" />
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="173.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileTypeFactory implementation="pkunk.hoi4.Hoi4FileTypeFactory"/>
+    <lang.parserDefinition language="Hoi4" implementationClass="pkunk.hoi4.Hoi4ParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="Hoi4" implementationClass="pkunk.hoi4.Hoi4SyntaxHighlighterFactory"/>
+    <lang.braceMatcher language="Hoi4" implementationClass="pkunk.hoi4.Hoi4PairedBraceMatcher"/>
+    <colorSettingsPage implementation="pkunk.hoi4.Hoi4ColorSettingsPage"/>
+    <annotator language="Hoi4" implementationClass="pkunk.hoi4.Hoi4Annotator"/>
+    <codeInsight.lineMarkerProvider language="Hoi4" implementationClass="pkunk.hoi4.Hoi4LineMarkerProvider"/>
+    <lang.refactoringSupport language="Hoi4" implementationClass="pkunk.hoi4.Hoi4RefactoringSupportProvider"/>
+    <lang.findUsagesProvider language="Hoi4" implementationClass="pkunk.hoi4.Hoi4FindUsagesProvider"/>
+    <lang.foldingBuilder language="Hoi4" implementationClass="pkunk.hoi4.Hoi4FoldingBuilder"/>
+    <langCodeStyleSettingsProvider implementation="pkunk.hoi4.Hoi4CodeStyleSettingsProvider"/>
+    <lang.commenter language="Hoi4" implementationClass="pkunk.hoi4.Hoi4Commenter"/>
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+</idea-plugin>

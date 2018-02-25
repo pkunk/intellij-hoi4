@@ -1,0 +1,11 @@
+*~
+
+/.idea
+*.iml
+/out
+
+/gen
+*.flex
+
+*.jar
+*.skeleton

@@ -1,0 +1,90 @@
+{
+  parserClass="pkunk.hoi4.parser.Hoi4Parser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Hoi4"
+  psiImplClassSuffix="Impl"
+  psiPackage="pkunk.hoi4.psi"
+  psiImplPackage="pkunk.hoi4.psi.impl"
+
+  elementTypeHolderClass="pkunk.hoi4.psi.Hoi4Types"
+  elementTypeClass="pkunk.hoi4.psi.Hoi4ElementType"
+  tokenTypeClass="pkunk.hoi4.psi.Hoi4TokenType"
+
+  psiImplUtilClass="pkunk.hoi4.psi.impl.Hoi4PsiImplUtil"
+
+  tokens=[
+    BOM='regexp:\U00FEFF'
+//  Operators
+    NOT ='NOT'
+    OR ='OR'
+    AND ='AND'
+    XOR ='regexp:(xor)|(XOR)'
+    IF ='if'
+    ELSE ='else'
+    RANDOM_LIST ='random_list'
+    RANDOM_EVENTS ='random_events'
+    EQUAL ='='
+    LESS='<'
+    MORE='>'
+    LBRACE='{'
+    RBRACE='}'
+    YES='yes'
+    NO='no'
+    CLR='regexp:color|color_ui'
+    RGB='rgb'
+    HSV='regexp:hsv|HSV'
+
+//  General
+    SPACE='regexp:\s+'
+    COMMENT='regexp:#.*'
+    DATE='regexp:\d+\.\d+\.\d+(\.\d+)?'
+    INTEGER='regexp:-?\d+'
+    FLOAT='regexp:-?\d+(\.\d*)?'
+    TAG='regexp:(ROOT|FROM|PREV|FROM.FROM)|!(!([A-Z][A-Z0-9][A-Z0-9])|TAG)'
+    VARIABLE="regexp:(\w|\.|_|:|@|-)*(\p{Alpha}|@)(\w|\.|_|:|@|-|')*"
+    STRING="regexp:(\"([^\"\\]|\\.)*\")"
+  ]
+}
+
+hoi4File ::= bom_mark? item_*
+
+private item_ ::= (statement|COMMENT|CRLF)
+
+bom_mark ::= BOM
+statement ::= set_block | expression  | tag_declaration | random_array | color {methods=[getValueType]}
+set_block ::= (key | state | country | bookmark | l_op | STRING) a_op block {methods=[getCurrentScope getElementKey getStringKey getChildStringKeys getChildPairKeys getParentSetBlock]}
+block ::= LBRACE statement* RBRACE
+expression ::= (key | x_op) c_op value {methods=[getCurrentScope getStringKey getParentSetBlock]}
+key ::= VARIABLE {mixin="pkunk.hoi4.psi.impl.Hoi4NamedElementImpl" implements="pkunk.hoi4.psi.Hoi4NamedElement"
+    methods=[getName setName getNameIdentifier getReference]}
+state ::= intValue
+country ::= TAG {mixin="pkunk.hoi4.psi.impl.Hoi4NamedElementImpl" implements="pkunk.hoi4.psi.Hoi4NamedElement"
+    methods=[getName setName getNameIdentifier getReference]}
+bookmark ::= DATE
+value ::= key | number | country | dateValue | boolean | stringValue | array
+dateValue ::= DATE
+stringValue ::= STRING
+number ::= intValue | FLOAT {methods=[getDouble]}
+intValue ::= INTEGER {mixin="pkunk.hoi4.psi.impl.Hoi4NamedElementImpl" implements="pkunk.hoi4.psi.Hoi4NamedElement"
+    methods=[getName setName getNameIdentifier getReference]}
+a_op ::= EQUAL
+c_op ::= EQUAL | LESS | MORE
+boolean ::= true | false
+true ::= YES
+false ::= NO
+l_op ::= NOT | OR | AND | IF | ELSE | XOR
+x_op ::= XOR
+r_op ::= RANDOM_LIST | RANDOM_EVENTS
+array ::= LBRACE ((VARIABLE | STRING)+ | (intValue | FLOAT)+ | country+) RBRACE
+color ::= CLR a_op ((RGB? LBRACE red green blue RBRACE) | (HSV LBRACE hue saturation brightness RBRACE))
+red ::= INTEGER
+green ::= INTEGER
+blue ::= INTEGER
+hue ::= number
+saturation ::= number
+brightness ::= number
+tag_declaration ::= country a_op stringValue
+random_array ::= r_op a_op LBRACE random_event* RBRACE
+random_event ::= intValue a_op (key | block)

@@ -1,0 +1,6 @@
+* text=auto
+
+*.bnf text
+*.flex text
+*.java text
+*.xml text
